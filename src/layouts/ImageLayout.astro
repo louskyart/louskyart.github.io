@@ -1,0 +1,85 @@
+---
+import '../styles/global.css';
+import { Image } from 'astro:assets';
+import Nav from '../components/Nav.astro';
+import { imageMap } from '../data/images.js';
+
+const fm = Astro.props.frontmatter ?? Astro.props.content ?? {};
+const imagePath = fm.image;
+const key = imagePath?.replace('/src/images/', '');
+const resolvedImage = imagePath ? imageMap[key] : null;
+
+const folder = key?.split('/')[0] ?? '';
+const resolvedSiblings = Object.entries(imageMap)
+  .filter(([k]) => k.startsWith(folder + '/') && k !== key)
+  .map(([, m]) => m);
+---
+
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{fm.title ?? 'Imagem'} — Lou Sky</title>
+    <script is:inline>
+      document.addEventListener('contextmenu', e => { if (e.target.tagName === 'IMG') e.preventDefault(); });
+      document.addEventListener('dragstart', e => { if (e.target.tagName === 'IMG') e.preventDefault(); });
+    </script>
+  </head>
+  <body>
+    <Nav />
+
+    <div class="page">
+      {resolvedImage && (
+        <div class="row">
+          <div class="images-col">
+            <Image src={resolvedImage} alt={fm.title ?? ''} class="main-img" />
+            {resolvedSiblings.length > 0 && (
+              <div class="siblings">
+                {resolvedSiblings.map((img) => (
+                  <Image src={img} alt="" class="sibling-img" />
+                ))}
+              </div>
+            )}
+          </div>
+          <div class="text">
+            <slot />
+          </div>
+        </div>
+      )}
+    </div>
+
+    <style>
+      .page {
+        max-width: 1500px;
+        margin: 0 auto;
+      }
+      .row {
+        display: flex;
+        gap: 2rem;
+        align-items: flex-start;
+      }
+      .images-col { flex: 3.5; min-width: 0; }
+      .main-img { width: 100%; }
+      .text { flex: 1.5; min-width: 0; text-align: left; }
+      .text :global(h1) {
+        font-size: 1.25rem;
+        font-weight: 400;
+        margin-bottom: 1rem;
+      }
+      .text :global(p) {
+        color: #555;
+        line-height: 1.6;
+      }
+      .siblings {
+        display: grid;
+        gap: 2rem;
+        margin: 3rem 0 0;
+      }
+      .sibling-img { width: 100%; }
+      @media (max-width: 640px) {
+        .row { flex-direction: column; }
+      }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,33 @@
+---
+import '../styles/global.css';
+import { Image } from 'astro:assets';
+import Nav from '../components/Nav.astro';
+import { imageMap } from '../data/images.js';
+
+const fm = Astro.props.frontmatter ?? Astro.props.content ?? {};
+const pageTitle = fm.title;
+const imagePath = fm.coverImage ?? fm.pageImage ?? fm.image;
+
+const mappedKey = imagePath?.replace('/src/images/', '');
+const resolvedImage = imagePath ? imageMap[mappedKey] : null;
+---
+
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{pageTitle ?? 'Lou Sky'}</title>
+    <script is:inline>
+      document.addEventListener('contextmenu', e => { if (e.target.tagName === 'IMG') e.preventDefault(); });
+      document.addEventListener('dragstart', e => { if (e.target.tagName === 'IMG') e.preventDefault(); });
+    </script>
+  </head>
+  <body>
+    <Nav />
+    {resolvedImage && (
+      <Image src={resolvedImage} alt="" class="page-img" />
+    )}
+    <slot />
+  </body>
+</html>
