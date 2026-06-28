@@ -1,36 +1,41 @@
-const imageModules = import.meta.glob('/src/images/**/*.{jpg,JPG,jpeg,JPEG,png,PNG}', {
-  eager: true,
-});
+// load all images
+const imageModules = import.meta.glob(
+  "/src/images/**/*.{jpg,JPG,jpeg,JPEG,png,PNG}",
+  {
+    eager: true,
+  },
+);
 
 const imageMap = {};
 const allImages = [];
 const folderSet = new Set();
 
 for (const [path, mod] of Object.entries(imageModules)) {
-  const key = path.replace('/src/images/', '');
+  const key = path.replace("/src/images/", "");
   const meta = mod.default;
   imageMap[key] = meta;
 
-  const slashIdx = key.indexOf('/');
+  const slashIdx = key.indexOf("/");
   const folder = key.slice(0, slashIdx);
   const file = key.slice(slashIdx + 1);
   const id = folder;
-  const fileBase = file.replace(/\.\w+$/, '');
+  const fileBase = file.replace(/\.\w+$/, "");
 
-  const folderTitle = folder === 'inicio'
-    ? 'Página Inicial'
-    : folder.charAt(0).toUpperCase() + folder.slice(1).replace(/-/g, ' ');
+  const folderTitle =
+    folder.charAt(0).toUpperCase() + folder.slice(1).replace(/-/g, " ");
 
   folderSet.add(folder);
-  allImages.push({ id, image: meta, folder, title: folderTitle, file: fileBase });
+  allImages.push({
+    id,
+    image: meta,
+    folder,
+    title: folderTitle,
+    file: fileBase,
+  });
 }
 
-// Sort folders: "inicio" always last, rest alphabetically
-const folders = [...folderSet].sort((a, b) => {
-  if (a === 'inicio') return 1;
-  if (b === 'inicio') return -1;
-  return a.localeCompare(b);
-});
+// "Sort" folders randomly
+const folders = [...folderSet].sort(() => Math.random() - 0.5);
 
 // Rebuild allImages in folder order, then by filename within each folder
 const folderRank = {};
@@ -42,7 +47,7 @@ allImages.sort((a, b) => {
 });
 
 const coverImages = allImages.filter(
-  (img) => img.folder !== 'bio' && (img.folder === 'inicio' || img.file === '01')
+  (img) => img.folder !== "bio" && img.file === "01",
 );
 
 export { allImages, coverImages, imageMap };
