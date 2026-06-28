@@ -35,7 +35,7 @@ for (const [path, mod] of Object.entries(imageModules)) {
 }
 
 // "Sort" folders randomly
-const folders = [...folderSet].sort(() => Math.random() - 0.5);
+const folders = [...folderSet].sort((a, b) => a.localeCompare(b));
 
 // Rebuild allImages in folder order, then by filename within each folder
 const folderRank = {};

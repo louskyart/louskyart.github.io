@@ -16,6 +16,14 @@ import Nav from '../components/Nav.astro';
       document.addEventListener('dragstart', e => { if (e.target.tagName === 'IMG') e.preventDefault(); });
     </script>
   </head>
+  <script>
+  const gallery = document.querySelector('.gallery');
+  if (gallery) {
+    const items = [...gallery.children];
+    items.sort(() => Math.random() - 0.5);
+    items.forEach(el => gallery.appendChild(el));
+  }
+  </script>
   <body>
     <Nav />
 
